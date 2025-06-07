@@ -80,7 +80,7 @@ class Calculator(Gtk.Window):
         typing_area.get_style_context().add_class("typing-area")
         
         self.text_view = Gtk.TextView()
-        self.text_view.set_editable(False)
+        self.text_view.set_editable(True)
         self.text_view.set_cursor_visible(True)
         self.text_view.set_justification(Gtk.Justification.LEFT)
         self.text_view.set_valign(Gtk.Align.START)
@@ -488,5 +488,8 @@ if __name__ == "__main__":
     # Ensure the window gets keyboard focus
     win.grab_focus()
     win.present()
+    
+    # Give focus to the text view to show cursor
+    win.text_view.grab_focus()
     
     Gtk.main()

@@ -30,6 +30,7 @@ class Calculator(Gtk.Window):
         settings.set_property("gtk-application-prefer-dark-theme", True)
         
         self.backend = CalculatorBackend()
+        self.just_calculated = False  # Flag to track if we just got a result
 
         # Apply CSS styling first
         self.apply_css()
@@ -253,6 +254,7 @@ class Calculator(Gtk.Window):
             # Clear the backend and set it to the result for next calculation
             self.backend.clear()
             self.backend.input(formatted_result)
+            self.just_calculated = True  # Set flag that we just calculated
             
             # Keep scroll position at top - do not auto-scroll to bottom
             # User can manually scroll to see latest entries
@@ -260,6 +262,7 @@ class Calculator(Gtk.Window):
         elif label == "C":
             self.backend.clear()
             self.text_buffer.set_text("")
+            self.just_calculated = False  # Reset flag
         elif label == "BACKSPACE":
             # Handle backspace - check for selection first
             if self.text_buffer.get_has_selection():
@@ -292,6 +295,13 @@ class Calculator(Gtk.Window):
             
             if (current_text == "0" or current_text == "") and label.isdigit():
                 self.backend.clear()
+            elif self.just_calculated and label.isdigit():
+                # If we just calculated and user types a number, start fresh
+                self.backend.clear()
+                self.just_calculated = False  # Clear flag after handling
+            elif self.just_calculated and label in ['+', '-', '×', '÷', '*', '/', '%', '(', ')']:
+                # If we just calculated and user types an operator, continue from result
+                self.just_calculated = False  # Clear flag after handling
             
             # Convert × back to * for backend processing
             backend_label = label.replace('×', '*').replace('÷', '/')
